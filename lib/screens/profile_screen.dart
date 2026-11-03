@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/mock_data.dart';
 import '../theme/app_theme.dart';
@@ -12,6 +13,31 @@ import '../widgets/stat_tile.dart';
 /// Экран 8. Профиль пользователя.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  /// Блокирующее решение → AlertDialog с результатом (C6).
+  Future<void> _logout(BuildContext context) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Выйти из аккаунта?'),
+        content: const Text('Серия дней и прогресс сохранятся.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, false), // dialogCtx, не context экрана
+            child: const Text('Нет'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+            onPressed: () => Navigator.pop(dialogCtx, true),
+            child: const Text('Да, выйти'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && context.mounted) {
+      context.go('/login'); // go: раздел с вкладками уходит из стека
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +151,7 @@ class ProfileScreen extends StatelessWidget {
             label: 'Выйти из аккаунта',
             variant: DuoButtonVariant.outline,
             icon: Icons.logout_rounded,
-            onPressed: () {},
+            onPressed: () => _logout(context),
           ),
         ],
       ),
