@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'screens/card_form_screen.dart';
@@ -8,44 +9,85 @@ import 'screens/login_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/review_session_screen.dart';
 import 'screens/stats_screen.dart';
+import 'widgets/app_shell.dart';
 
-/// Карта маршрутов: ВСЕ экраны ТЗ получают адрес.
+/// Корневой навигатор: на нём открывается сессия повторения — на весь экран,
+/// без нижней панели (как урок в Duolingo).
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
+/// Карта маршрутов: login снаружи, три раздела — во вкладках shell-а.
 final router = GoRouter(
+  navigatorKey: rootNavigatorKey,
   initialLocation: '/login', // приложение стартует в аутентификации
   routes: [
-    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
-    GoRoute(path: '/decks', builder: (context, state) => const DecksScreen()),
-    // ФИКСИРОВАННЫЕ адреса стоят перед '/decks/:id', иначе int.parse('new') упадёт
-    GoRoute(path: '/decks/new', builder: (context, state) => const DeckFormScreen()),
-    GoRoute(path: '/decks/review', builder: (context, state) => const ReviewSessionScreen()),
     GoRoute(
-      path: '/decks/:id',
-      builder: (context, state) {
-        final id = int.parse(state.pathParameters['id']!);
-        return DeckDetailScreen(id: id);
-      },
+      path: '/login', // ВНЕ shell-а: login без вкладок
+      builder: (context, state) => const LoginScreen(),
     ),
-    GoRoute(
-      path: '/decks/:id/edit',
-      builder: (context, state) => DeckFormScreen(deckId: int.parse(state.pathParameters['id']!)),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
+      branches: [
+        // Вкладка 1: колоды и всё, что глубже
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/decks',
+              builder: (context, state) => const DecksScreen(),
+              routes: [
+                GoRoute(
+                  path: 'new', // /decks/new — ФИКСИРОВАННЫЙ, стоит перед ':id'
+                  builder: (context, state) => const DeckFormScreen(),
+                ),
+                GoRoute(
+                  path: 'review', // /decks/review — все карточки к повторению сегодня
+                  parentNavigatorKey: rootNavigatorKey,
+                  builder: (context, state) => const ReviewSessionScreen(),
+                ),
+                GoRoute(
+                  path: ':id', // /decks/7
+                  builder: (context, state) {
+                    final id = int.parse(state.pathParameters['id']!);
+                    return DeckDetailScreen(id: id);
+                  },
+                  routes: [
+                    GoRoute(
+                      path: 'edit', // /decks/7/edit
+                      builder: (context, state) =>
+                          DeckFormScreen(deckId: int.parse(state.pathParameters['id']!)),
+                    ),
+                    GoRoute(
+                      path: 'review', // /decks/7/review — сессия по одной колоде
+                      parentNavigatorKey: rootNavigatorKey,
+                      builder: (context, state) =>
+                          ReviewSessionScreen(deckId: int.parse(state.pathParameters['id']!)),
+                    ),
+                    GoRoute(
+                      path: 'cards/new', // /decks/7/cards/new — перед 'cards/:cardId'
+                      builder: (context, state) =>
+                          CardFormScreen(deckId: int.parse(state.pathParameters['id']!)),
+                    ),
+                    GoRoute(
+                      path: 'cards/:cardId', // /decks/7/cards/42 — редактирование карточки
+                      builder: (context, state) => CardFormScreen(
+                        deckId: int.parse(state.pathParameters['id']!),
+                        cardId: int.parse(state.pathParameters['cardId']!),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+        // Вкладка 2: статистика
+        StatefulShellBranch(
+          routes: [GoRoute(path: '/stats', builder: (context, state) => const StatsScreen())],
+        ),
+        // Вкладка 3: профиль
+        StatefulShellBranch(
+          routes: [GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen())],
+        ),
+      ],
     ),
-    GoRoute(
-      path: '/decks/:id/review',
-      builder: (context, state) =>
-          ReviewSessionScreen(deckId: int.parse(state.pathParameters['id']!)),
-    ),
-    GoRoute(
-      path: '/decks/:id/cards/new',
-      builder: (context, state) => CardFormScreen(deckId: int.parse(state.pathParameters['id']!)),
-    ),
-    GoRoute(
-      path: '/decks/:id/cards/:cardId',
-      builder: (context, state) => CardFormScreen(
-        deckId: int.parse(state.pathParameters['id']!),
-        cardId: int.parse(state.pathParameters['cardId']!),
-      ),
-    ),
-    GoRoute(path: '/stats', builder: (context, state) => const StatsScreen()),
-    GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
   ],
 );
