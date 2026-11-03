@@ -11,8 +11,9 @@ import 'subject_avatar.dart';
 /// Используется на экранах «Мои колоды» и «Профиль».
 class DeckCard extends StatelessWidget {
   final Deck deck;
+  final VoidCallback? onTap; // L3: карточка «оживает» — переход к деталям
 
-  const DeckCard({super.key, required this.deck});
+  const DeckCard({super.key, required this.deck, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -21,35 +22,39 @@ class DeckCard extends StatelessWidget {
     final progress = deck.cardCount == 0 ? 0.0 : deck.learned / deck.cardCount;
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            SubjectAvatar(subject: deck.subject),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    deck.name,
-                    style: text.titleMedium,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${deck.subject} · ${cardsLabel(deck.cardCount)}',
-                    style: text.bodySmall?.copyWith(color: duo.muted),
-                  ),
-                  const SizedBox(height: 8),
-                  DuoProgressBar(value: progress, height: 12),
-                ],
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              SubjectAvatar(subject: deck.subject),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      deck.name,
+                      style: text.titleMedium,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${deck.subject} · ${cardsLabel(deck.cardCount)}',
+                      style: text.bodySmall?.copyWith(color: duo.muted),
+                    ),
+                    const SizedBox(height: 8),
+                    DuoProgressBar(value: progress, height: 12),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            _DueBadge(count: deck.dueToday),
-          ],
+              const SizedBox(width: 12),
+              _DueBadge(count: deck.dueToday),
+            ],
+          ),
         ),
       ),
     );

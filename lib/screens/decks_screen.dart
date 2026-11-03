@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/mock_data.dart';
 import '../theme/app_theme.dart';
@@ -32,7 +33,7 @@ class DecksScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => context.push('/decks/new'), // открыть форму → закроется pop-ом
         tooltip: 'Новая колода',
         child: const Icon(Icons.add_rounded, size: 32),
       ),
@@ -68,7 +69,7 @@ class DecksScreen extends StatelessWidget {
                           DuoButton(
                             label: 'Начать повторение',
                             icon: Icons.play_arrow_rounded,
-                            onPressed: () {},
+                            onPressed: dueTotal == 0 ? null : () => context.push('/decks/review'),
                           ),
                         ],
                       ),
@@ -104,7 +105,13 @@ class DecksScreen extends StatelessWidget {
             sliver: SliverList.separated(
               itemCount: mockDecks.length,
               separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (context, index) => DeckCard(deck: mockDecks[index]),
+              itemBuilder: (context, index) {
+                final deck = mockDecks[index];
+                return DeckCard(
+                  deck: deck,
+                  onTap: () => context.push('/decks/${deck.id}'), // зайду и вернусь
+                );
+              },
             ),
           ),
         ],
