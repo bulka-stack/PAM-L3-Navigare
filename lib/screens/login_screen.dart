@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../theme/app_theme.dart';
 import '../widgets/duo_button.dart';
-import 'decks_screen.dart';
 
 /// Экран 1. Вход / регистрация — строго статический (L2):
 /// два TextField-а, FilledButton «Войти», ссылка на регистрацию; без Form и validator.
@@ -65,10 +65,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 24),
               DuoButton(
                 label: 'Войти',
-                // L2: без проверки полей — только переход на стартовый экран,
-                // чтобы не блокировать демонстрацию.
-                onPressed: () =>
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DecksScreen())),
+                onPressed: () => context.go('/decks'),
               ),
               const SizedBox(height: 12),
               TextButton(onPressed: () {}, child: const Text('Нет аккаунта? Зарегистрируйтесь')),

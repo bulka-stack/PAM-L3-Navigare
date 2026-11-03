@@ -8,7 +8,10 @@ import '../widgets/subject_avatar.dart';
 /// Экран 5. Форма новой карточки / редактирования: лицевая и обратная сторона.
 /// Макет L2 — без валидации и без сохранения.
 class CardFormScreen extends StatelessWidget {
-  const CardFormScreen({super.key});
+  final int deckId;
+  final int? cardId;
+
+  const CardFormScreen({super.key, required this.deckId, this.cardId});
 
   @override
   Widget build(BuildContext context) {

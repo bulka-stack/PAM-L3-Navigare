@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/home_screen.dart';
+import 'router.dart';
 import 'theme/app_theme.dart';
 
 void main() => runApp(const StudyCardsApp());
@@ -10,12 +10,12 @@ class StudyCardsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    // L3: MaterialApp.router — навигацию принимает router, параметр home: исчез.
+    return MaterialApp.router(
       title: 'StudyCards',
       debugShowCheckedModeBanner: false,
-      // ColorScheme.fromSeed(seedColor: studySeed) — см. theme/app_theme.dart
-      theme: buildAppTheme(),
-      home: const HomeScreen(),
+      theme: buildAppTheme(), // тема из L2 — без изменений
+      routerConfig: router,
     );
   }
 }

@@ -7,7 +7,10 @@ import '../widgets/subject_avatar.dart';
 
 /// Экран 4. Форма новой колоды / редактирования — макет L2 (без валидации и сохранения).
 class DeckFormScreen extends StatelessWidget {
-  const DeckFormScreen({super.key});
+  /// null — новая колода, иначе редактирование.
+  final int? deckId;
+
+  const DeckFormScreen({super.key, this.deckId});
 
   @override
   Widget build(BuildContext context) {

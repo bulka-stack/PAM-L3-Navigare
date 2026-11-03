@@ -8,7 +8,10 @@ import '../widgets/duo_progress_bar.dart';
 /// Экран 6. Сессия повторения: карточка (перевёрнута — видны обе стороны)
 /// и оценка «снова / хорошо / легко». На L2 — статический кадр.
 class ReviewSessionScreen extends StatelessWidget {
-  const ReviewSessionScreen({super.key});
+  /// null — все колоды.
+  final int? deckId;
+
+  const ReviewSessionScreen({super.key, this.deckId});
 
   @override
   Widget build(BuildContext context) {
