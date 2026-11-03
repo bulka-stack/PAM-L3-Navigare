@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/login_screen.dart';
+import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() => runApp(const StudyCardsApp());
@@ -15,7 +15,7 @@ class StudyCardsApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // ColorScheme.fromSeed(seedColor: studySeed) — см. theme/app_theme.dart
       theme: buildAppTheme(),
-      home: const LoginScreen(),
+      home: const HomeScreen(),
     );
   }
 }
